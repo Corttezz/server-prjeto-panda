@@ -89,5 +89,21 @@ router.get('/:videoId', async (req, res) => {
   }
 });
 
+router.delete('/:videoId', async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    const deletedVideo = await libraryModel.deleteVideoById(videoId);
+
+    if (!deletedVideo) {
+      return res.status(404).json({ message: 'Vídeo não encontrado!' });
+    }
+
+    res.status(200).json({ message: 'Vídeo excluído com sucesso!', deletedVideo });
+  } catch (error) {
+    console.error('Error deleting video:', error);
+    res.status(500).json({ message: error.message || 'Algo deu errado!' });
+  }
+});
+
 
 module.exports = router;

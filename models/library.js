@@ -69,6 +69,25 @@ class Library {
         throw error;
       }
     }
+
+    async deleteVideoById(videoId) {
+      try {
+        const result = await this.db.query(
+          'DELETE FROM library WHERE video_id = $1 RETURNING *',
+          [videoId]
+        );
+    
+        if (result.rows.length === 0) {
+          return null;
+        }
+    
+        return result.rows[0];
+      } catch (error) {
+        console.error('Error executing query:', error);
+        throw error;
+      }
+    }
+    
     
   }
   module.exports = Library;
