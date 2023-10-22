@@ -4,11 +4,6 @@ const jwt = require('jsonwebtoken');
 const pool = require('../models/db');
 const User = require('../models/user');
 const axios = require('axios');
-const cors = require('cors');
-
-
-
-app.use(cors()); // ativa o uso de CORS para todas as rotas
 
 
 const router = express.Router();
