@@ -9,14 +9,17 @@ const axios = require('axios');
 const router = express.Router();
 
 // Função auxiliar para validar os dados de entrada
-const validateUserData = (email, password, name = null) => {
-  if (!email || !email.includes('@')) {
+const validateUserData = (data) => {
+  if (!data || typeof data !== 'object') {
+    throw new Error('Dados inválidos fornecidos para validação.');
+  }
+  if (!data.email || !data.email.includes('@')) {
     throw new Error('Email inválido.');
   }
-  if (!password || password.length < 6) {
+  if (!data.password || data.password.length < 6) {
     throw new Error('A senha deve ter pelo menos 6 caracteres.');
   }
-  if (name && name.length < 3) {
+  if (!data.name || data.name.length < 3) {
     throw new Error('O nome deve ter pelo menos 3 caracteres.');
   }
 };
@@ -134,10 +137,9 @@ router.get('/:userId', async (req, res) => {
 router.put('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const { email, name, password } = req.body;
+    const { updateData } = req.body; // Aqui você extrai os dados atualizados do corpo da requisição
 
-    // Validação de dados de entrada
-    validateUserData(email, password, name);
+    validateUserData(updateData); // Validação de dados de entrada
 
     // Verificar se o usuário existe
     const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
@@ -149,9 +151,13 @@ router.put('/:userId', async (req, res) => {
 
     // Se a senha foi fornecida, criptografe-a antes de salvar
     let hashedPassword = user.password; // mantenha a senha antiga se uma nova não foi fornecida
-    if (password) {
-      hashedPassword = await bcrypt.hash(password, 12);
+    if (updateData.password) { // Aqui você verifica se uma nova senha foi fornecida nos dados de atualização
+      hashedPassword = await bcrypt.hash(updateData.password, 12);
     }
+
+    // Prepare os dados para atualização, verificando se eles existem em updateData
+    const email = updateData.email || user.email;
+    const name = updateData.name || user.name;
 
     // Atualizar usuário no banco de dados
     const updateResult = await pool.query(
@@ -167,6 +173,7 @@ router.put('/:userId', async (req, res) => {
     res.status(500).json({ message: error.message || 'Algo deu errado!' });
   }
 });
+
 
 
 module.exports = router;
