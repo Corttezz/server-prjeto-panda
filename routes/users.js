@@ -131,6 +131,42 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
+router.put('/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { email, name, password } = req.body;
+
+    // Validação de dados de entrada
+    validateUserData(email, password, name);
+
+    // Verificar se o usuário existe
+    const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    const user = userResult.rows[0];
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado!' });
+    }
+
+    // Se a senha foi fornecida, criptografe-a antes de salvar
+    let hashedPassword = user.password; // mantenha a senha antiga se uma nova não foi fornecida
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 12);
+    }
+
+    // Atualizar usuário no banco de dados
+    const updateResult = await pool.query(
+      'UPDATE users SET email = $1, name = $2, password = $3 WHERE id = $4 RETURNING *',
+      [email, name, hashedPassword, userId]
+    );
+    const updatedUser = updateResult.rows[0];
+
+    // Enviar resposta de sucesso
+    res.status(200).json({ message: 'Dados do usuário atualizados com sucesso!', user: updatedUser });
+  } catch (error) {
+    console.error(error); // Logando o erro no console do servidor
+    res.status(500).json({ message: error.message || 'Algo deu errado!' });
+  }
+});
 
 
 module.exports = router;
