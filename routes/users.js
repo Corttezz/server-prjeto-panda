@@ -133,9 +133,9 @@ router.get('/:userId', async (req, res) => {
 router.put('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const { updateData } = req.body; // Aqui você extrai os dados atualizados do corpo da requisição
+    const { updateData } = req.body; 
 
-    validateUserData(updateData); // Validação de dados de entrada
+    validateUserData(updateData); 
 
     // Verificar se o usuário existe
     const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
@@ -145,13 +145,13 @@ router.put('/:userId', async (req, res) => {
       return res.status(404).json({ message: 'Usuário não encontrado!' });
     }
 
-    // Se a senha foi fornecida, criptografe-a antes de salvar
-    let hashedPassword = user.password; // mantenha a senha antiga se uma nova não foi fornecida
-    if (updateData.password) { // Aqui você verifica se uma nova senha foi fornecida nos dados de atualização
+   r
+    let hashedPassword = user.password; 
+    if (updateData.password) { 
       hashedPassword = await bcrypt.hash(updateData.password, 12);
     }
 
-    // Prepare os dados para atualização, verificando se eles existem em updateData
+   
     const email = updateData.email || user.email;
     const name = updateData.name || user.name;
 

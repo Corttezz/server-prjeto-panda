@@ -8,8 +8,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const users = require('./routes/users'); // Requer as rotas de usuários
-app.use('/users', users); // Usa as rotas de usuários
+const users = require('./routes/users'); 
+app.use('/users', users); 
 
 const libraryRoutes = require('./routes/library');
 app.use('/library', libraryRoutes);

@@ -19,7 +19,6 @@ class Library {
     
       const { videoId, videoExternalId, status } = data;
       try {
-        // Ajuste a query para usar apenas videoId como condição
         const result = await this.db.query(
           'UPDATE library SET video_external_id = $1, status = $2 WHERE video_id = $3 RETURNING *',
           [videoExternalId, status, videoId]

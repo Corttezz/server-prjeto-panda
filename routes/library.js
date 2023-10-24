@@ -37,7 +37,7 @@ router.put('/:videoId', async (req, res) => {
     const { videoExternalId, status } = req.body;
     const { videoId } = req.params;
 
-    // Não passe userId, title, ou libraryId, já que eles não são usados na query atualizada
+  
     const updatedLibraryEntry = await libraryModel.updateLibraryEntry({
       videoId,
       videoExternalId,
