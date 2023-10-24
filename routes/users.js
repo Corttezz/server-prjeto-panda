@@ -10,20 +10,16 @@ const router = express.Router();
 
 // Função auxiliar para validar os dados de entrada
 const validateUserData = (data) => {
-  if (!data || typeof data !== 'object') {
-    throw new Error('Dados inválidos fornecidos para validação.');
-  }
-  if (!data.email || !data.email.includes('@')) {
+  if ('email' in data && (!data.email || !data.email.includes('@'))) {
     throw new Error('Email inválido.');
   }
-  if (!data.password || data.password.length < 6) {
+  if ('password' in data && (!data.password || data.password.length < 6)) {
     throw new Error('A senha deve ter pelo menos 6 caracteres.');
   }
-  if (!data.name || data.name.length < 3) {
+  if ('name' in data && (!data.name || data.name.length < 3)) {
     throw new Error('O nome deve ter pelo menos 3 caracteres.');
   }
 };
-
 
 router.post('/register', async (req, res) => {
   console.log(req.body);
@@ -31,7 +27,7 @@ router.post('/register', async (req, res) => {
     const { email, password, name } = req.body;
 
     // Validação de dados de entrada
-    validateUserData(email, password, name);
+    validateUserData({ email, password, name });
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -82,7 +78,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Validação de dados de entrada
-    validateUserData(email, password);
+    validateUserData({email, password});
 
     // Verificar se o usuário existe
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
