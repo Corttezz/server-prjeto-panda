@@ -144,8 +144,6 @@ router.put('/:userId', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado!' });
     }
-
-   r
     let hashedPassword = user.password; 
     if (updateData.password) { 
       hashedPassword = await bcrypt.hash(updateData.password, 12);
